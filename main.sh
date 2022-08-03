@@ -10,17 +10,15 @@ log() {
     printf "$GREEN[Hook] $BLUE$1$RESET: executing $YELLOW$2$RESET\n"
 }
 
-# Thanks Dylan ❤️
-# https://github.com/dylanaraps/pure-sh-bible#get-the-base-name-of-a-file-path
-basename() {
-    dir=${1%${1##*[!/]}}
-    dir=${dir##*/}
-    dir=${dir%"$2"}
-    printf '%s\n' "${dir:-/}"
-}
+if [ -z "$1" ]; then
+    exit 0
+fi
 
-if [ ! -z "$1" ] && [ -d "./$1" ]; then
-    for hook in ./$1/*; do
+# main.sh base path (Hooks Working Directory)
+HWD=$(dirname "$0")
+
+if [ -d "$HWD/$1" ]; then
+    for hook in $HWD/$1/*; do
         if [ -x "$hook" ]; then
             log "$1" "$(basename "$hook")"
             "$hook" "$@"
